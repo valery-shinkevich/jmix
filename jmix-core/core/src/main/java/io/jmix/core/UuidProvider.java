@@ -17,8 +17,6 @@ package io.jmix.core;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 
-import java.security.SecureRandom;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
