@@ -15,6 +15,8 @@
  */
 package io.jmix.core;
 
+import com.github.f4b6a3.uuid.UuidCreator;
+
 import java.security.SecureRandom;
 import java.util.Random;
 import java.util.UUID;
@@ -25,41 +27,36 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public final class UuidProvider {
 
-    public static final long LSB_MASK = 0x3FFFFFFFFFFFFFFFL;
-    public static final long TS_MASK = 0x7FFFFFFFFFFFL;
-    public static final int UUID_VERSION = 0b0111;
-    public static final int VARIANT = 0b10;
-
     private UuidProvider() {
     }
 
-    private static UUID createClassicUuid() {
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        return new UUID(random.nextLong(), random.nextLong());
+    /**
+     * @return new UUIDv7 Type 1 (default)
+     */
+    public static UUID createUuid7t1() {
+        return UuidCreator.getTimeOrderedEpoch();
+    }
+    /**
+     * @return new UUIDv7 Type 2 (plus 1)
+     */
+    public static UUID createUuid7t2() {
+        return UuidCreator.getTimeOrderedEpochPlus1();
     }
 
-    private static UUID createUuid7() {
-        Random random;
-        try {
-            random = SecureRandom.getInstance("NativePRNGNonBlocking");
-        } catch (Exception e) {
-            random = ThreadLocalRandom.current();
-        }
-        long ts = System.currentTimeMillis();
-        long rand1 = random.nextLong(4096);
-        long rand2 = random.nextLong();
-
-        long msb = (((ts & TS_MASK) << 4 | UUID_VERSION) << 12) | rand1;
-        long lsb = (VARIANT & LSB_MASK) << 62 | rand2 & LSB_MASK;
-
-        return new UUID(msb, lsb);
+    /**
+     * @return new UUIDv7 Type 3 (plus n)
+     */
+    public static UUID createUuid7t3() {
+        return UuidCreator.getTimeOrderedEpochPlusN();
     }
+
 
     /**
      * @return new UUID
      */
     public static UUID createUuid() {
-        return createUuid7();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        return new UUID(random.nextLong(), random.nextLong());
     }
 
     /**
